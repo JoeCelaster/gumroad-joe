@@ -16,7 +16,7 @@ const LOCATION_TRACK_EVENT_DELAY_MS = 10_000;
 type SubtitleFile = {
   file: string;
   label: string;
-  kind: "captions";
+  kind: "captions" | "chapters";
 };
 
 type Video = {
@@ -27,6 +27,7 @@ type Video = {
   external_id: string;
   latest_media_location: { location: number } | null;
   content_length: number | null;
+  chapter_vtt_url?: string; // Optional: URL to .vtt chapters file
 };
 
 const fakeVideoUrlGuidForObfuscation = "ef64f2fef0d6c776a337050020423fc0";
@@ -66,7 +67,12 @@ export const VideoStreamPlayer = ({
           sources: video.sources.map((source) => ({
             file: source.replace(fakeVideoUrlGuidForObfuscation, video.guid),
           })),
-          tracks: video.tracks,
+          tracks: [
+            ...video.tracks,
+            ...(video.chapter_vtt_url
+              ? [{ file: video.chapter_vtt_url, kind: "chapters", label: "Chapters" } as SubtitleFile]
+              : []),
+          ],
           title: video.title,
         })),
       });
@@ -162,3 +168,4 @@ export const VideoStreamPlayer = ({
 };
 
 export default register({ component: VideoStreamPlayer, propParser: createCast() });
+
