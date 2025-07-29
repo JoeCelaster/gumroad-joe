@@ -168,4 +168,3 @@ export const VideoStreamPlayer = ({
 };
 
 export default register({ component: VideoStreamPlayer, propParser: createCast() });
-
